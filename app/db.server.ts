@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
 
 // Default exported function to get a new Prisma client instance
-export default async function createPrismaClient(context: AppLoadContext) {
+export default async function createPrismaClient(context: AppLoadContext | null) {
   // Extract database URL from context
   const schema = z.object({ DATABASE_URL: z.string() });
   const env = schema.safeParse(context?.cloudflare?.env);
@@ -13,10 +13,12 @@ export default async function createPrismaClient(context: AppLoadContext) {
     const pool = new pg.Pool({ connectionString: env.data.DATABASE_URL });
 
     // Create Prisma client with the pool and adapter
-    return new PrismaClient({
-      adapter: new PrismaPg(pool),
-    });
+    return new PrismaClient({ adapter: new PrismaPg(pool) });
   } else {
+    if (typeof process.env.DATABASE_URL !== 'undefined' && process.env.DATABASE_URL) {
+      const pool = new pg.Pool({connectionString: process.env.DATABASE_URL});
+      return new PrismaClient({ adapter: new PrismaPg(pool) });
+    }
     throw new Error('DATABASE_URL is not defined or empty in context');
   }
 }

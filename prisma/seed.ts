@@ -1,5 +1,5 @@
-import { createLocalPrismaClient } from '~/db.server';
-const prisma = createLocalPrismaClient();
+import createPrismaClient from '~/db.server';
+const prisma = await createPrismaClient(null);
 
 async function main() {
   await prisma.counter.create({
