@@ -1,7 +1,8 @@
-import { localPrisma } from '~/db.server';
+import { createLocalPrismaClient } from '~/db.server';
+const prisma = createLocalPrismaClient();
 
 async function main() {
-  await localPrisma.counter.create({
+  await prisma.counter.create({
     data: {
       count: 1,
     },
@@ -13,5 +14,5 @@ main()
     throw e;
   })
   .finally(async () => {
-    await localPrisma.$disconnect();
+    await prisma.$disconnect();
   });
