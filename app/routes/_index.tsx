@@ -1,6 +1,49 @@
-import type { MetaFunction } from "@remix-run/cloudflare";
+import type { AppLoadContext, MetaFunction } from "@remix-run/cloudflare";
 import {typedjson, useTypedFetcher, useTypedLoaderData} from "remix-typedjson";
-import { prisma } from '~/db.server';
+import createPrismaClient from '~/db.server';
+import type { PrismaClient } from '@prisma/client'; // Import for PrismaClient type
+
+export async function loader({ context }: { context: AppLoadContext }) {
+  let prisma: PrismaClient;
+
+  try {
+    // Create a new Prisma client for this request
+    prisma = await createPrismaClient(context);
+
+    // Your existing loader logic using prisma
+    const data = await prisma.counter.findFirst();
+    return typedjson({ count: data?.count || 0 });
+  } finally {
+    // Ensure disconnection even if errors occur
+    if (prisma) {
+      await prisma.$disconnect();
+    }
+  }
+}
+
+export async function action({ context }: { context: AppLoadContext }) {
+  let prisma: PrismaClient;
+
+  try {
+    // Create a new Prisma client for this request
+    prisma = await createPrismaClient(context);
+
+    // Your existing action logic using prisma
+    const data = await prisma.counter.updateMany({
+      data: {
+        count: {
+          increment: 1,
+        },
+      },
+    });
+    return typedjson({ count: data?.count || 0 });
+  } finally {
+    // Ensure disconnection even if errors occur
+    if (prisma) {
+      await prisma.$disconnect();
+    }
+  }
+}
 
 export const meta: MetaFunction = () => {
   return [
@@ -11,22 +54,6 @@ export const meta: MetaFunction = () => {
     },
   ];
 };
-
-export async function loader() {
-  const data = await prisma.counter.findFirst();
-  return typedjson({ count: data?.count || 0 });
-}
-
-export async function action() {
-  const data = await prisma.counter.updateMany({
-    data: {
-      count: {
-        increment: 1,
-      },
-    },
-  });
-  return typedjson({ count: data?.count || 0 });
-}
 
 interface CounterProps {
   count: number;
