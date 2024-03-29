@@ -1,48 +1,49 @@
-# Welcome to Remix + Vite!
+# Remix app Cloudflare/Prisma/Postgres Proof-of-Concept
 
-📖 See the [Remix docs](https://remix.run/docs) and the [Remix Vite docs](https://remix.run/docs/en/main/future/vite) for details on supported features.
+This app is a boilerplate remix app designed to prove out the ability to run
+Remix Vite on a Cloudflare worker that connects to a supabase backend via Prisma
+ORM. I've been struggling to get the `pg` library to bundle correctly in vite.
+Your goal is to make the following command run without errors:
 
-## Typegen
-
-Generate types for your Cloudflare bindings in `wrangler.toml`:
-
-```sh
-npm run typegen
+```
+pnpm run build && pnpm run start
 ```
 
-You will need to rerun typegen whenever you make changes to `wrangler.toml`.
+## Setting up your environment
 
-## Development
-
-Run the Vite dev server:
-
-```sh
-npm run dev
+This assumes that you've installed [nvm](https://github.com/nvm-sh/nvm).
+```
+nvm install 20
+nvm use 20
+npm install -g pnpm
+pnpm i
 ```
 
-To run Wrangler:
+Set up a postgres instance on [supabase](https://supabase.com/). Create a
+`.env.` file with the following contents, substituting in your real connection
+string:
 
-```sh
-npm run build
-npm run start
+```
+DATABASE_URL="postgres://postgres.INSTANCEID:password@aws-0-us-east-1.pooler.supabase.com:5432/postgres"
 ```
 
-## Deployment
+Initialize your database with `pnpx prisma migrate reset -f`.
 
-> [!WARNING]  
-> Cloudflare does _not_ use `wrangler.toml` to configure deployment bindings.
-> You **MUST** [configure deployment bindings manually in the Cloudflare dashboard][bindings].
+At this point it should be possible to run `pnpm run dev`, browse to the app on
+localhost, click the button and see the numbers increase, which means your
+database is working.
 
-First, build your app for production:
-
-```sh
-npm run build
+The goal of this proof-of-concept is to edit `app/db.server.ts`, follow the
+instructions in the comments, then try to get the following command to work
+without errors:
+```
+pnpm run build && pnpm run start
 ```
 
-Then, deploy your app to Cloudflare Pages:
+## Background
 
-```sh
-npm run deploy
+This project was created as a standard remix boilerplate app using the remix
+cloudflare template:
 ```
-
-[bindings]: https://developers.cloudflare.com/pages/functions/bindings/
+pnpx create-remix@latest --template remix-run/remix/templates/cloudflare
+```
