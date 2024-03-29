@@ -1,7 +1,6 @@
 import type { AppLoadContext, MetaFunction } from "@remix-run/cloudflare";
 import {typedjson, useTypedFetcher, useTypedLoaderData} from "remix-typedjson";
-import createPrismaClient from '~/db.server';
-import type { PrismaClient } from '@prisma/client'; // Import for PrismaClient type
+import createPrismaClient, { PrismaClient } from '~/db.server';
 
 export async function loader({ context }: { context: AppLoadContext }) {
   let prisma: PrismaClient | null = null;
