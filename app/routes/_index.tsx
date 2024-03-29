@@ -4,7 +4,7 @@ import createPrismaClient from '~/db.server';
 import type { PrismaClient } from '@prisma/client'; // Import for PrismaClient type
 
 export async function loader({ context }: { context: AppLoadContext }) {
-  let prisma: PrismaClient;
+  let prisma: PrismaClient | null = null;
 
   try {
     // Create a new Prisma client for this request
@@ -15,14 +15,14 @@ export async function loader({ context }: { context: AppLoadContext }) {
     return typedjson({ count: data?.count || 0 });
   } finally {
     // Ensure disconnection even if errors occur
-    if (prisma) {
-      await prisma.$disconnect();
+    if (typeof prisma !== 'undefined') {
+      await prisma?.$disconnect();
     }
   }
 }
 
 export async function action({ context }: { context: AppLoadContext }) {
-  let prisma: PrismaClient;
+  let prisma: PrismaClient | null = null;
 
   try {
     // Create a new Prisma client for this request
@@ -39,8 +39,8 @@ export async function action({ context }: { context: AppLoadContext }) {
     return typedjson({ count: data?.count || 0 });
   } finally {
     // Ensure disconnection even if errors occur
-    if (prisma) {
-      await prisma.$disconnect();
+    if (typeof prisma !== 'undefined') {
+      await prisma?.$disconnect();
     }
   }
 }
