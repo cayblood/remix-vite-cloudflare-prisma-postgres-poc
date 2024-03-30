@@ -28,7 +28,8 @@ At this point it should be possible to run `pnpm run dev`, browse to the app on
 localhost, click the button and see the numbers increase, which means your
 database is working.
 
-To deploy the app to cloudflare, run `pnpm run deploy`.
+To deploy the app to cloudflare, first create an env var on your cloudflare
+worker with `wrangler secret put DATABASE_URL` and then run `pnpm run deploy`.
 
 ## Background
 
