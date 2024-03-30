@@ -20,25 +20,20 @@ pnpm i
 ```
 
 Set up a postgres instance on [supabase](https://supabase.com/). Create a
-`.env.` file with the following contents, substituting in your real connection
+`.env` file with the following contents, substituting in your real connection
 string:
 
 ```
 DATABASE_URL="postgres://postgres.INSTANCEID:password@aws-0-us-east-1.pooler.supabase.com:5432/postgres"
 ```
 
-Initialize your database with `pnpx prisma migrate reset -f`.
+Initialize your database with `pnpm run db:reset`.
 
 At this point it should be possible to run `pnpm run dev`, browse to the app on
 localhost, click the button and see the numbers increase, which means your
 database is working.
 
-The goal of this proof-of-concept is to edit `app/db.server.ts`, follow the
-instructions in the comments, then try to get the following command to work
-without errors:
-```
-pnpm run build && pnpm run start
-```
+To deploy the app to cloudflare, run `pnpm run deploy`.
 
 ## Background
 
