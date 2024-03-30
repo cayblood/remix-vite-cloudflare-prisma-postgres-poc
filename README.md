@@ -2,12 +2,7 @@
 
 This app is a boilerplate remix app designed to prove out the ability to run
 Remix Vite on a Cloudflare worker that connects to a supabase backend via Prisma
-ORM. I've been struggling to get the `pg` library to bundle correctly in vite.
-Your goal is to make the following command run without errors:
-
-```
-pnpm run build && pnpm run start
-```
+ORM.
 
 ## Setting up your environment
 
