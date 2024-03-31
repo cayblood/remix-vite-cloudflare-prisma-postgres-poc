@@ -1,48 +1,22 @@
-import type { AppLoadContext, MetaFunction } from "@remix-run/cloudflare";
+import type { MetaFunction } from "@remix-run/cloudflare";
 import {typedjson, useTypedFetcher, useTypedLoaderData} from "remix-typedjson";
-import createPrismaClient, { PrismaClient } from '~/db.server';
+import { prismaLoader } from '~/prismaLoader';
 
-export async function loader({ context }: { context: AppLoadContext }) {
-  let prisma: PrismaClient | null = null;
+export const loader = prismaLoader(async function loader({ prisma }) {
+  const data = await prisma.counter.findFirst();
+  return typedjson({ count: data?.count || 0 });
+});
 
-  try {
-    // Create a new Prisma client for this request
-    prisma = await createPrismaClient(context);
-
-    // Your existing loader logic using prisma
-    const data = await prisma.counter.findFirst();
-    return typedjson({ count: data?.count || 0 });
-  } finally {
-    // Ensure disconnection even if errors occur
-    if (typeof prisma !== 'undefined') {
-      await prisma?.$disconnect();
-    }
-  }
-}
-
-export async function action({ context }: { context: AppLoadContext }) {
-  let prisma: PrismaClient | null = null;
-
-  try {
-    // Create a new Prisma client for this request
-    prisma = await createPrismaClient(context);
-
-    // Your existing action logic using prisma
-    const data = await prisma.counter.updateMany({
-      data: {
-        count: {
-          increment: 1,
-        },
+export const action = prismaLoader(async function action({ prisma }) {
+  const data = await prisma.counter.updateMany({
+    data: {
+      count: {
+        increment: 1,
       },
-    });
-    return typedjson({ count: data?.count || 0 });
-  } finally {
-    // Ensure disconnection even if errors occur
-    if (typeof prisma !== 'undefined') {
-      await prisma?.$disconnect();
-    }
-  }
-}
+    },
+  });
+  return typedjson({ count: data?.count || 0 });
+});
 
 export const meta: MetaFunction = () => {
   return [
